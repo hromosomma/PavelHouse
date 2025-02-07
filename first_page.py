@@ -1,9 +1,10 @@
 import pygame
 
 from button_class import Button
-from main import load_image
+from first_level import load_image
 
-if __name__ == "__main__":
+
+def first_page():
     pygame.init()
     size = width, height = 900, 900
     screen = pygame.display.set_mode(size)
@@ -25,20 +26,51 @@ if __name__ == "__main__":
 
     running = True
 
-    start_button = Button(width // 2 - 150, height // 2 - 50, 300, 100,"Start",
+    start_button = Button(width // 2 - 150, height // 2 - 100, 300, 100, "Start",
                           "assets/buttons/button_1.png", "assets/buttons/button_1_hovered.png",
-                           "assets/sounds/pushed_button.mp3")
+                          "assets/sounds/pushed_button.mp3")
+    rules_button = Button(width // 2 - 150, height // 2 + 100, 300, 100, "Rules",
+                          "assets/buttons/button_1.png", "assets/buttons/button_1_hovered.png",
+                          "assets/sounds/pushed_button.mp3")
+
+    font = pygame.font.Font("assets/fonts/Daydream.ttf", 40)
+    title_surface = font.render("Pasha's House", True, (255, 255, 255))
+    title_rect = title_surface.get_rect(center=(width // 2, 100))
+
+    exit_flag = 1
+
     while running:
         screen.fill((0, 0, 0))
         screen.blit(bg_home_screen, (camera_x, camera_y))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                exit_flag = 1
                 running = False
             start_button.handle_event(event)
+            rules_button.handle_event(event)
+
+            if event.type == pygame.USEREVENT and event.button == start_button:
+                start_button.sound.play()
+                pygame.time.wait(500)
+                exit_flag = 0
+                running = False
+
+            if event.type == pygame.USEREVENT and event.button == rules_button:
+                rules_button.sound.play()
+                pygame.time.wait(500)
+                exit_flag = 3
+                running = False
 
         start_button.draw(screen)
         start_button.check_hover(pygame.mouse.get_pos())
+
+        rules_button.draw(screen)
+        rules_button.check_hover(pygame.mouse.get_pos())
+
+        screen.blit(title_surface, title_rect)
+
         pygame.display.flip()
 
     pygame.quit()
+    return exit_flag
